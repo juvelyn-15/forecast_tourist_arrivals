@@ -1,0 +1,5 @@
+Model,MAE,RMSE,MAPE (%),SMAPE (%),Theil-U,Rank
+SARIMA,"460,899","486,709",36.50,45.67,2.274,1
+HW Additive,"850,611","887,100",66.79,101.69,4.334,2
+Naive Seasonal,"948,167","994,889",74.59,123.62,4.759,3
+HW Multiplicative,nan,nan,nan,nan,nan,999

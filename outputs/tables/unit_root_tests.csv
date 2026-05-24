@@ -1,0 +1,9 @@
+Series,Test,H0,Test Stat,p-value,1% CV,5% CV,Decision (5%)
+log_arrivals (level),ADF,Unit root (non-stationary),1.9537,0.9986,-3.4595,-2.8744,Fail to Reject → Non-stationary
+log_arrivals (level),KPSS,Stationary,0.4905,0.01,0.216,0.146,Reject H0 → Non-stationary
+Δlog_arrivals,ADF,Unit root (non-stationary),-1.339,0.6111,-3.4595,-2.8744,Fail to Reject → Non-stationary
+Δlog_arrivals,KPSS,Stationary,0.2343,0.01,0.216,0.146,Reject H0 → Non-stationary
+Δ₁₂log_arrivals,ADF,Unit root (non-stationary),-1.4559,0.5552,-3.4611,-2.8751,Fail to Reject → Non-stationary
+Δ₁₂log_arrivals,KPSS,Stationary,0.2551,0.01,0.216,0.146,Reject H0 → Non-stationary
+Δ·Δ₁₂log_arrivals,ADF,Unit root (non-stationary),-3.9924,0.0015,-3.4611,-2.8751,Reject H0 → Stationary
+Δ·Δ₁₂log_arrivals,KPSS,Stationary,0.0384,0.1,0.216,0.146,Fail to Reject → Stationary
