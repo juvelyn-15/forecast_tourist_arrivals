@@ -95,14 +95,14 @@ jupyter notebook notebooks/
 
 ## 📊 Models Applied
 
-| Model | Course Section | Purpose |
-|-------|---------------|---------|
-| Decomposition + Holt-Winters | §I | Baseline: trend + seasonality smoothing |
-| ADF / PP / KPSS Tests | §IV | Determine integration order `d`, `D` |
-| SARIMA(p,d,q)(P,D,Q)₁₂ | §III + §VI | Primary forecasting model |
-| ARIMA on log-differenced | §III | Handles unit root; log-returns interpretation |
-| GARCH(1,1) on residuals | §VI | Models volatility clustering in recovery |
-| VAR (extension) | §VI | Multi-equation model with USD/VND, oil price |
+| Model  | Purpose |
+|-------|---------|
+| Decomposition + Holt-Winters | Baseline: trend + seasonality smoothing |
+| ADF / PP / KPSS Tests | Determine integration order `d`, `D` |
+| SARIMA(p,d,q)(P,D,Q)₁₂ | Primary forecasting model |
+| ARIMA on log-differenced | Handles unit root; log-returns interpretation |
+| GARCH(1,1) on residuals | Models volatility clustering in recovery |
+| VAR (extension) | Multi-equation model with USD/VND, oil price |
 
 ---
 
