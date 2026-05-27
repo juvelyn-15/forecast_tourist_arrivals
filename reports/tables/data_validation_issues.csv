@@ -1,0 +1,67 @@
+date,issue_type,column,value,detail
+2012-10-01,missing_month,date,,Month absent from raw file.
+2020-12-01,missing_month,date,,Month absent from raw file.
+2021-01-01,missing_month,date,,Month absent from raw file.
+2021-02-01,missing_month,date,,Month absent from raw file.
+2021-03-01,missing_month,date,,Month absent from raw file.
+2021-05-01,missing_month,date,,Month absent from raw file.
+2021-06-01,missing_month,date,,Month absent from raw file.
+2021-07-01,missing_month,date,,Month absent from raw file.
+2021-08-01,missing_month,date,,Month absent from raw file.
+2021-09-01,missing_month,date,,Month absent from raw file.
+2021-10-01,missing_month,date,,Month absent from raw file.
+2021-11-01,missing_month,date,,Month absent from raw file.
+2024-07-01,missing_month,date,,Month absent from raw file.
+2012-05-01,segment_sum_inconsistency,segment_sum,456749.0,Segment sum differs from total by 25.79%.
+2013-07-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2015-05-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2017-03-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2017-04-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2020-01-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2021-04-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2022-01-01,segment_sum_inconsistency,segment_sum,21462.0,Segment sum differs from total by 592.32%.
+2022-04-01,segment_sum_inconsistency,segment_sum,107828.0,Segment sum differs from total by 6.37%.
+2022-05-01,segment_sum_inconsistency,segment_sum,185201.0,Segment sum differs from total by 7.08%.
+2022-06-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2022-07-01,segment_sum_inconsistency,segment_sum,376051.0,Segment sum differs from total by 6.66%.
+2022-08-01,segment_sum_inconsistency,segment_sum,514338.0,Segment sum differs from total by 5.74%.
+2022-09-01,segment_sum_inconsistency,segment_sum,461551.0,Segment sum differs from total by 6.86%.
+2022-10-01,segment_sum_inconsistency,segment_sum,526125.0,Segment sum differs from total by 8.62%.
+2022-11-01,segment_sum_inconsistency,segment_sum,651520.0,Segment sum differs from total by 9.15%.
+2022-12-01,segment_sum_inconsistency,segment_sum,767242.0,Segment sum differs from total by 8.51%.
+2023-01-01,segment_sum_inconsistency,segment_sum,767242.0,Segment sum differs from total by 8.51%.
+2023-03-01,segment_sum_inconsistency,segment_sum,941397.0,Segment sum differs from total by 5.13%.
+2023-04-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2024-11-01,segment_sum_inconsistency,segment_sum,1862408.0,Segment sum differs from total by 8.82%.
+2025-02-01,segment_sum_inconsistency,segment_sum,2056492.0,Segment sum differs from total by 8.58%.
+2025-04-01,segment_sum_inconsistency,segment_sum,1746977.0,Segment sum differs from total by 5.58%.
+2025-05-01,segment_sum_inconsistency,segment_sum,1611354.0,Segment sum differs from total by 5.43%.
+2025-06-01,segment_sum_inconsistency,segment_sum,2153067.0,Segment sum differs from total by 5.98%.
+2025-07-01,segment_sum_inconsistency,segment_sum,1648721.0,Segment sum differs from total by 5.51%.
+2025-08-01,segment_sum_inconsistency,segment_sum,1772681.0,Segment sum differs from total by 5.21%.
+2025-09-01,segment_sum_inconsistency,segment_sum,1605341.0,Segment sum differs from total by 5.38%.
+2025-11-01,segment_sum_inconsistency,segment_sum,2102113.0,Segment sum differs from total by 6.27%.
+2013-01-01,suspicious_repeated_values,all_target_columns,614673,Exact repeated target vector after an earlier month; likely stale crawler output.
+2014-01-01,suspicious_repeated_values,all_target_columns,722349,Exact repeated target vector after an earlier month; likely stale crawler output.
+2015-01-01,suspicious_repeated_values,all_target_columns,657304,Exact repeated target vector after an earlier month; likely stale crawler output.
+2015-05-01,suspicious_repeated_values,all_target_columns,2031519,Exact repeated target vector after an earlier month; likely stale crawler output.
+2017-01-01,suspicious_repeated_values,all_target_columns,897279,Exact repeated target vector after an earlier month; likely stale crawler output.
+2017-03-01,suspicious_repeated_values,all_target_columns,2031519,Exact repeated target vector after an earlier month; likely stale crawler output.
+2017-04-01,suspicious_repeated_values,all_target_columns,2031519,Exact repeated target vector after an earlier month; likely stale crawler output.
+2018-01-01,suspicious_repeated_values,all_target_columns,1276353,Exact repeated target vector after an earlier month; likely stale crawler output.
+2019-01-01,suspicious_repeated_values,all_target_columns,1374235,Exact repeated target vector after an earlier month; likely stale crawler output.
+2020-01-01,suspicious_repeated_values,all_target_columns,2031519,Exact repeated target vector after an earlier month; likely stale crawler output.
+2020-05-01,suspicious_repeated_values,all_target_columns,3686779,Exact repeated target vector after an earlier month; likely stale crawler output.
+2020-06-01,suspicious_repeated_values,all_target_columns,3686779,Exact repeated target vector after an earlier month; likely stale crawler output.
+2020-07-01,suspicious_repeated_values,all_target_columns,3686779,Exact repeated target vector after an earlier month; likely stale crawler output.
+2020-08-01,suspicious_repeated_values,all_target_columns,3686779,Exact repeated target vector after an earlier month; likely stale crawler output.
+2020-09-01,suspicious_repeated_values,all_target_columns,3686779,Exact repeated target vector after an earlier month; likely stale crawler output.
+2020-10-01,suspicious_repeated_values,all_target_columns,3686779,Exact repeated target vector after an earlier month; likely stale crawler output.
+2020-11-01,suspicious_repeated_values,all_target_columns,3686779,Exact repeated target vector after an earlier month; likely stale crawler output.
+2021-04-01,suspicious_repeated_values,all_target_columns,2031519,Exact repeated target vector after an earlier month; likely stale crawler output.
+2022-06-01,suspicious_repeated_values,all_target_columns,2031519,Exact repeated target vector after an earlier month; likely stale crawler output.
+2023-01-01,suspicious_repeated_values,all_target_columns,707071,Exact repeated target vector after an earlier month; likely stale crawler output.
+2023-04-01,suspicious_repeated_values,all_target_columns,2031519,Exact repeated target vector after an earlier month; likely stale crawler output.
+2024-01-01,suspicious_repeated_values,all_target_columns,1371135,Exact repeated target vector after an earlier month; likely stale crawler output.
+2025-01-01,suspicious_repeated_values,all_target_columns,1747240,Exact repeated target vector after an earlier month; likely stale crawler output.
+2025-06-01,suspicious_repeated_values,all_target_columns,2031519,Exact repeated target vector after an earlier month; likely stale crawler output.

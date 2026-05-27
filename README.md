@@ -1,122 +1,241 @@
-# 🏖️ Forecasting International Tourist Arrivals to Vietnam
+# Forecasting Vietnam International Tourist Arrivals
 
-**Course:** Time Series Analysis and Forecast in Economics and Finance  
-**Topic:** Forecasting international tourist arrivals to Vietnam  
-**Student:** Duong Thi Huyen Trang — 11230593  
-**University:** National Economics University (NEU)
+Academic-style time-series forecasting project for Vietnam's monthly international tourist arrivals using VNAT regional segment data.
 
----
+The project validates raw crawler output, builds a complete monthly modeling dataset, explores seasonality and structural breaks, estimates Holt-Winters, SARIMA, and SARIMA-GARCH models, evaluates 2023-2025 test forecasts, and writes figures, tables, notebooks, and a summary report.
 
-## 📋 Project Overview
+## Research Scope
 
-This project builds a complete forecasting pipeline for Vietnam's monthly international tourist arrivals, applying the full spectrum of time series methods taught in the course: exploratory decomposition, Holt-Winters smoothing, Box-Jenkins SARIMA, and GARCH volatility modeling.
+Primary target:
 
-### Economic Motivation
+- `international_arrivals`
 
-Tourism is a critical pillar of Vietnam's economy — contributing roughly 10% of GDP in pre-pandemic years. Accurate forecasts are essential for:
-- **Government planning:** Ministry of Culture, Sports and Tourism allocates infrastructure and marketing budgets.
-- **Hospitality industry:** Hotels, airlines, and tour operators rely on arrival projections for capacity planning.
-- **Macroeconomic analysis:** Tourism earnings are a major source of foreign exchange.
+Supporting segment targets:
 
-The series is analytically rich: it exhibits strong **monthly seasonality** (Tet holidays, summer peaks), a clear **upward trend** (2010–2019), a catastrophic **structural break** during COVID-19 (2020–2021), and a volatile **recovery phase** (2022–2024) — making it ideal for demonstrating SARIMA and GARCH.
+- `asia_arrivals`
+- `europe_arrivals`
+- `americas_arrivals`
+- `oceania_arrivals`
+- `other_markets_arrivals`
 
----
+ASEAN is intentionally excluded. Annual World Bank arrivals are not used as the main modeling dataset.
 
-## 📁 Repository Structure
+## Data
 
+Raw dataset:
+
+```text
+data/raw/vnat_monthly_segments.csv
 ```
-vietnam_tourism_forecast/
-│
+
+Clean modeling dataset:
+
+```text
+data/processed/vnat_monthly_segments_clean.csv
+```
+
+Current data status:
+
+- Raw rows: 155
+- Clean monthly rows: 168
+- Sample period: January 2012 to December 2025
+- Train period: 2012-2022
+- Test period: 2023-2025
+
+The raw file contains crawler-quality issues. The validation pipeline reports:
+
+- 13 missing months
+- 29 segment-sum consistency warnings
+- 24 suspicious repeated target vectors
+- 0 duplicated months
+- 0 non-positive values
+
+The preprocessing pipeline keeps the raw file unchanged, flags problematic rows, imputes affected values deterministically, and saves a complete monthly panel. Current clean quality flags:
+
+- `observed`: 109 rows
+- `segment_reconciliation`: 35 rows
+- `stale_repeated_vector`: 24 rows
+
+## Repository Layout
+
+```text
+forecast_tourist_arrivals/
 ├── data/
-│   ├── raw/                  # Raw scraped / downloaded data
-│   └── processed/            # Cleaned, formatted time series
-│
-├── src/
-│   ├── crawl/
-│   │   ├── crawl_vnat.py         # Scrape VNAT official statistics
-│   │   ├── crawl_worldbank.py    # World Bank API (backup source)
-│   │   └── merge_sources.py      # Merge & reconcile data sources
-│   ├── models/
-│   │   ├── eda.py                # Decomposition, ACF/PACF, unit root tests
-│   │   ├── holt_winters.py       # Holt-Winters (additive & multiplicative)
-│   │   ├── sarima.py             # Auto ARIMA + manual SARIMA grid search
-│   │   ├── garch.py              # GARCH on SARIMA residuals
-│   │   └── var_model.py          # Optional VAR with macro covariates
-│   └── utils/
-│       ├── preprocessing.py      # Cleaning, log transform, outlier handling
-│       └── evaluation.py         # MAE, RMSE, MAPE, Diebold-Mariano test
-│
+│   ├── raw/
+│   │   └── vnat_monthly_segments.csv
+│   └── processed/
+│       └── vnat_monthly_segments_clean.csv
 ├── notebooks/
-│   ├── 01_data_collection.ipynb
-│   ├── 02_eda_stationarity.ipynb
-│   ├── 03_holt_winters.ipynb
-│   ├── 04_sarima.ipynb
-│   ├── 05_garch.ipynb
-│   └── 06_comparison_forecast.ipynb
-│
-├── outputs/
-│   ├── figures/              # All plots
-│   ├── tables/               # Model diagnostics, test results
-│   └── forecasts/            # Forecast CSV files
-│
+│   ├── 01_eda.ipynb
+│   ├── 02_decomposition_stationarity.ipynb
+│   ├── 03_modeling_total_arrivals.ipynb
+│   ├── 04_modeling_segments.ipynb
+│   └── 05_results_interpretation.ipynb
 ├── reports/
-│   └── final_report.md       # Written analysis & interpretation
-│
+│   ├── figures/
+│   ├── tables/
+│   ├── model_summary.md
+│   └── report.md
+├── src/
+│   ├── config.py
+│   ├── plotting.py
+│   ├── crawl/
+│   │   └── crawl_vnat_segments.py
+│   ├── data/
+│   │   ├── validate_data.py
+│   │   └── preprocess.py
+│   ├── models/
+│   │   ├── evaluation.py
+│   │   ├── holt_winters.py
+│   │   ├── sarima.py
+│   │   └── sarima_garch.py
+│   └── reporting/
+│       ├── create_notebooks.py
+│       └── generate_outputs.py
 ├── requirements.txt
 └── README.md
 ```
 
----
+## Environment Setup
 
-## 🚀 Quick Start
+From the repository root:
 
-```bash
-# 1. Clone and install dependencies
-pip install -r requirements.txt
-
-# 2. Crawl & collect data
-python src/crawl/crawl_worldbank.py     # Reliable API-based source
-python src/crawl/crawl_vnat.py          # VNAT official stats (requires manual step)
-python src/crawl/merge_sources.py       # Merge into master dataset
-
-# 3. Run EDA
-python src/models/eda.py
-
-# 4. Run models in order
-python src/models/holt_winters.py
-python src/models/sarima.py
-python src/models/garch.py
-
-# Or use the Jupyter notebooks for interactive analysis
-jupyter notebook notebooks/
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
----
+If refreshing VNAT data with Playwright:
 
-## 📊 Models Applied
+```powershell
+python -m playwright install chromium
+```
 
-| Model  | Purpose |
-|-------|---------|
-| Decomposition + Holt-Winters | Baseline: trend + seasonality smoothing |
-| ADF / PP / KPSS Tests | Determine integration order `d`, `D` |
-| SARIMA(p,d,q)(P,D,Q)₁₂ | Primary forecasting model |
-| ARIMA on log-differenced | Handles unit root; log-returns interpretation |
-| GARCH(1,1) on residuals | Models volatility clustering in recovery |
-| VAR (extension) | Multi-equation model with USD/VND, oil price |
+## Reproducible Pipeline
 
----
+Run these commands from the repository root.
 
-## 📈 Expected Key Findings
+Validate the raw VNAT file:
 
-1. The series is **I(1)** with seasonal integration — requiring one regular and one seasonal difference.
-2. **SARIMA(1,1,1)(1,1,1)₁₂** or similar is expected to outperform Holt-Winters on the test set.
-3. **GARCH effects** are significant in the post-COVID recovery residuals, indicating excess volatility not captured by SARIMA alone.
-4. **Forecast horizon:** 12–24 months ahead (2025–2026), with 95% confidence intervals.
+```powershell
+python src\data\validate_data.py
+```
 
----
+Create the clean modeling dataset:
 
-## 📚 Data Sources
+```powershell
+python src\data\preprocess.py
+```
 
-- **VNAT (Vietnam National Administration of Tourism):** https://vietnamtourism.gov.vn/
-- **World Bank:** `ST.INT.ARVL` indicator via `wbgapi`
-- **UNWTO:** Supplementary validation
+Evaluate all models:
+
+```powershell
+python src\models\evaluation.py
+```
+
+Generate figures, tables, and the written report:
+
+```powershell
+python src\reporting\generate_outputs.py
+```
+
+Regenerate notebooks:
+
+```powershell
+python src\reporting\create_notebooks.py
+```
+
+Optional raw data refresh:
+
+```powershell
+python src\crawl\crawl_vnat_segments.py --start 2012 --end 2025 --no-cache
+```
+
+## Notebooks
+
+The notebooks are written as an academic analysis sequence:
+
+1. `01_eda.ipynb`
+   Exploratory analysis of total arrivals, segment volumes, segment shares, seasonality, yearly trend, growth rates, event annotations, and correlation structure.
+
+2. `02_decomposition_stationarity.ipynb`
+   Seasonal decomposition, ADF test, KPSS test, ACF/PACF analysis, log transformation comparison, and COVID structural-break discussion.
+
+3. `03_modeling_total_arrivals.ipynb`
+   Primary forecast notebook for `international_arrivals`: train/test split, fitted values, forecasts, confidence intervals, residual diagnostics, and model comparison.
+
+4. `04_modeling_segments.ipynb`
+   Segment-level modeling for Asia, Europe, Americas, Oceania, and other markets, focused on heterogeneous recovery patterns.
+
+5. `05_results_interpretation.ipynb`
+   Final interpretation of objective, data validation, EDA findings, COVID shock, recovery pattern, segment heterogeneity, model performance, implications, limitations, and future work.
+
+## Models
+
+Implemented models:
+
+- Holt-Winters / Exponential Smoothing on log arrivals.
+- SARIMA/SARIMAX selected by compact AIC grid search on log arrivals.
+- SARIMA-GARCH with GARCH(1,1) fitted to SARIMA residuals, not raw arrivals.
+
+Evaluation metrics:
+
+- MAE
+- RMSE
+- MAPE
+- sMAPE
+
+Outputs:
+
+```text
+reports/tables/model_metrics.csv
+reports/tables/best_models.csv
+reports/tables/model_forecasts.csv
+reports/tables/stationarity_tests.csv
+reports/model_summary.md
+reports/figures/
+```
+
+## Current Model Results
+
+Best models by sMAPE in the current run:
+
+| Target | Best model | MAE | RMSE | MAPE | sMAPE |
+|---|---:|---:|---:|---:|---:|
+| `international_arrivals` | SARIMA | 679,227 | 775,568 | 42.12% | 55.90% |
+| `asia_arrivals` | SARIMA | 560,118 | 631,949 | 44.20% | 59.30% |
+| `europe_arrivals` | Holt-Winters | 57,828 | 76,346 | 25.89% | 32.19% |
+| `americas_arrivals` | SARIMA | 337,475 | 394,276 | 397.07% | 119.38% |
+| `oceania_arrivals` | Holt-Winters | 20,392 | 22,209 | 46.16% | 61.76% |
+| `other_markets_arrivals` | SARIMA | 1,811 | 2,034 | 45.94% | 62.13% |
+
+Interpretation: SARIMA is currently selected for the primary total-arrivals target, while segment-level results vary. Large percentage errors for smaller segments reflect low denominators, imputation uncertainty, and unstable post-COVID recovery dynamics.
+
+## Figure and Table Style
+
+Figures use a consistent muted academic color palette:
+
+- total arrivals: charcoal
+- Asia: muted blue
+- Europe: muted green
+- Americas: muted orange
+- Oceania: muted purple
+- other markets: muted gray
+
+Generated plots avoid gridlines, decorative effects, 3D charts, and unnecessary chart elements. Event annotations are used sparingly for COVID-19, border reopening, recovery, Russia-Ukraine war, China-US tensions, and Iran-Israel conflict.
+
+## Important Implementation Notes
+
+- All scripts are designed to run from the repository root.
+- Project paths are centralized in `src/config.py`.
+- The cleaned dataset is reproducible from the raw VNAT CSV.
+- `reports/model_summary.md` is the current generated summary report.
+- `reports/report.md` is an older report artifact retained for reference.
+- Raw crawler HTML and screenshot caches are intentionally ignored by Git.
+
+## Limitations
+
+The analysis depends on crawler-derived VNAT monthly segment data. The raw file contains missing months, stale repeated pages, and segment-sum inconsistencies. The preprocessing pipeline flags and imputes affected observations, but model results should be interpreted as conditional on this cleaned dataset.
+
+Future work should refresh the VNAT scrape, manually verify problematic months, add exogenous predictors such as flight capacity, exchange rates, visa policy, and source-market macroeconomic indicators, and compare structural-break or regime-switching models.
