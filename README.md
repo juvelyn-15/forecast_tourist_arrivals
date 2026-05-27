@@ -1,16 +1,20 @@
 # Forecasting Vietnam International Tourist Arrivals
 
-Academic-style time-series forecasting project for Vietnam's monthly international tourist arrivals using VNAT regional segment data.
+## Abstract
 
-The project validates raw crawler output, builds a complete monthly modeling dataset, explores seasonality and structural breaks, estimates Holt-Winters, SARIMA, and SARIMA-GARCH models, evaluates 2023-2025 test forecasts, and writes figures, tables, notebooks, and a summary report.
+This repository contains a reproducible time-series forecasting study of Vietnam's monthly international tourist arrivals. The empirical analysis uses monthly segment-level data from the Vietnam National Administration of Tourism (VNAT), with total arrivals as the primary forecasting target and regional source-market arrivals as supporting analytical series. The project evaluates seasonal demand structure, post-pandemic recovery dynamics, and forecast performance across Holt-Winters, SARIMA, and SARIMA-GARCH models.
 
-## Research Scope
+The analysis is designed as a forecasting workflow: raw data validation, deterministic preprocessing, exploratory data analysis, decomposition and stationarity testing, model estimation, out-of-sample evaluation, visualization, and interpretation.
 
-Primary target:
+## Research Objective
+
+The objective is to assess how classical time-series models forecast Vietnam's international tourism demand under strong seasonality, structural disruption, and post-COVID recovery uncertainty.
+
+The primary dependent variable is:
 
 - `international_arrivals`
 
-Supporting segment targets:
+Supporting regional variables are:
 
 - `asia_arrivals`
 - `europe_arrivals`
@@ -18,45 +22,48 @@ Supporting segment targets:
 - `oceania_arrivals`
 - `other_markets_arrivals`
 
-ASEAN is intentionally excluded. Annual World Bank arrivals are not used as the main modeling dataset.
+ASEAN arrivals are not used. Annual World Bank arrivals are not used as the primary modeling dataset.
 
 ## Data
 
-Raw dataset:
+The raw modeling source is:
 
 ```text
 data/raw/vnat_monthly_segments.csv
 ```
 
-Clean modeling dataset:
+The processed modeling dataset is:
 
 ```text
 data/processed/vnat_monthly_segments_clean.csv
 ```
 
-Current data status:
+The cleaned dataset covers January 2012 through December 2025 at monthly frequency. The model evaluation split is:
 
-- Raw rows: 155
-- Clean monthly rows: 168
-- Sample period: January 2012 to December 2025
-- Train period: 2012-2022
-- Test period: 2023-2025
+- Training sample: 2012-01 to 2022-12
+- Test sample: 2023-01 to 2025-12
 
-The raw file contains crawler-quality issues. The validation pipeline reports:
+### Data Validation Summary
 
-- 13 missing months
-- 29 segment-sum consistency warnings
-- 24 suspicious repeated target vectors
-- 0 duplicated months
-- 0 non-positive values
+The raw VNAT file contains 155 rows and the cleaned dataset contains the complete 168-month panel. Validation identifies the following raw-data issues:
 
-The preprocessing pipeline keeps the raw file unchanged, flags problematic rows, imputes affected values deterministically, and saves a complete monthly panel. Current clean quality flags:
+| Check | Result |
+|---|---:|
+| Missing months | 13 |
+| Segment-sum consistency warnings | 29 |
+| Suspicious repeated target vectors | 24 |
+| Duplicated months | 0 |
+| Non-positive values | 0 |
 
-- `observed`: 109 rows
-- `segment_reconciliation`: 35 rows
-- `stale_repeated_vector`: 24 rows
+The preprocessing stage preserves the raw file, flags problematic observations, imputes affected values deterministically, and writes the cleaned monthly panel. Missing or invalid target values are filled by time-based interpolation with calendar-month median fallback. Current clean-data quality flags are:
 
-## Repository Layout
+| Quality flag | Rows |
+|---|---:|
+| `observed` | 109 |
+| `segment_reconciliation` | 35 |
+| `stale_repeated_vector` | 24 |
+
+## Repository Structure
 
 ```text
 forecast_tourist_arrivals/
@@ -89,16 +96,13 @@ forecast_tourist_arrivals/
 │   │   ├── holt_winters.py
 │   │   ├── sarima.py
 │   │   └── sarima_garch.py
-│   └── reporting/
-│       ├── create_notebooks.py
-│       └── generate_outputs.py
 ├── requirements.txt
 └── README.md
 ```
 
-## Environment Setup
+## Environment
 
-From the repository root:
+The project is written for Python and should be executed from the repository root.
 
 ```powershell
 python -m venv .venv
@@ -106,85 +110,46 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-If refreshing VNAT data with Playwright:
+Playwright is required only when refreshing VNAT crawler output:
 
 ```powershell
 python -m playwright install chromium
 ```
 
-## Reproducible Pipeline
+## Reproducible Workflow
 
-Run these commands from the repository root.
-
-Validate the raw VNAT file:
+### 1. Validate Raw Data
 
 ```powershell
 python src\data\validate_data.py
 ```
 
-Create the clean modeling dataset:
+Outputs:
+
+```text
+reports/tables/data_validation_checks.csv
+reports/tables/data_validation_issues.csv
+reports/tables/data_validation_report.md
+```
+
+### 2. Preprocess Data
 
 ```powershell
 python src\data\preprocess.py
 ```
 
-Evaluate all models:
+Outputs:
+
+```text
+data/processed/vnat_monthly_segments_clean.csv
+reports/tables/preprocessing_flags.csv
+```
+
+### 3. Evaluate Forecasting Models
 
 ```powershell
 python src\models\evaluation.py
 ```
-
-Generate figures, tables, and the written report:
-
-```powershell
-python src\reporting\generate_outputs.py
-```
-
-Regenerate notebooks:
-
-```powershell
-python src\reporting\create_notebooks.py
-```
-
-Optional raw data refresh:
-
-```powershell
-python src\crawl\crawl_vnat_segments.py --start 2012 --end 2025 --no-cache
-```
-
-## Notebooks
-
-The notebooks are written as an academic analysis sequence:
-
-1. `01_eda.ipynb`
-   Exploratory analysis of total arrivals, segment volumes, segment shares, seasonality, yearly trend, growth rates, event annotations, and correlation structure.
-
-2. `02_decomposition_stationarity.ipynb`
-   Seasonal decomposition, ADF test, KPSS test, ACF/PACF analysis, log transformation comparison, and COVID structural-break discussion.
-
-3. `03_modeling_total_arrivals.ipynb`
-   Primary forecast notebook for `international_arrivals`: train/test split, fitted values, forecasts, confidence intervals, residual diagnostics, and model comparison.
-
-4. `04_modeling_segments.ipynb`
-   Segment-level modeling for Asia, Europe, Americas, Oceania, and other markets, focused on heterogeneous recovery patterns.
-
-5. `05_results_interpretation.ipynb`
-   Final interpretation of objective, data validation, EDA findings, COVID shock, recovery pattern, segment heterogeneity, model performance, implications, limitations, and future work.
-
-## Models
-
-Implemented models:
-
-- Holt-Winters / Exponential Smoothing on log arrivals.
-- SARIMA/SARIMAX selected by compact AIC grid search on log arrivals.
-- SARIMA-GARCH with GARCH(1,1) fitted to SARIMA residuals, not raw arrivals.
-
-Evaluation metrics:
-
-- MAE
-- RMSE
-- MAPE
-- sMAPE
 
 Outputs:
 
@@ -192,14 +157,56 @@ Outputs:
 reports/tables/model_metrics.csv
 reports/tables/best_models.csv
 reports/tables/model_forecasts.csv
-reports/tables/stationarity_tests.csv
-reports/model_summary.md
-reports/figures/
 ```
 
-## Current Model Results
+### 4. Optional: Refresh Raw VNAT Segment Data
 
-Best models by sMAPE in the current run:
+```powershell
+python src\crawl\crawl_vnat_segments.py --start 2012 --end 2025 --no-cache
+```
+
+Raw HTML and screenshot caches generated by the crawler are ignored by Git.
+
+## Notebooks
+
+The notebooks provide the main analytical narrative.
+
+| Notebook | Purpose |
+|---|---|
+| `01_eda.ipynb` | Exploratory analysis of total arrivals, segment volumes, market shares, seasonality, yearly trend, growth rates, event annotations, and correlation structure. |
+| `02_decomposition_stationarity.ipynb` | Seasonal decomposition, ADF and KPSS tests, ACF/PACF analysis, log transformation comparison, and structural-break interpretation. |
+| `03_modeling_total_arrivals.ipynb` | Primary modeling notebook for total arrivals, including train/test split, forecasts, confidence intervals, residual diagnostics, and model comparison. |
+| `04_modeling_segments.ipynb` | Segment-level model evaluation for Asia, Europe, Americas, Oceania, and other markets. |
+| `05_results_interpretation.ipynb` | Final academic interpretation of data, validation results, EDA findings, model performance, implications, limitations, and future extensions. |
+
+## Methods
+
+### Holt-Winters
+
+Holt-Winters exponential smoothing is estimated on log arrivals to capture trend and seasonal demand patterns. Forecast intervals are approximated from residual variation in the transformed series.
+
+### SARIMA
+
+SARIMA/SARIMAX models are estimated on log arrivals. A compact AIC-based grid search selects non-seasonal and seasonal orders with monthly seasonality.
+
+### SARIMA-GARCH
+
+SARIMA-GARCH combines a SARIMA conditional mean model with a GARCH(1,1) model fitted to SARIMA residuals. GARCH is therefore applied to residual volatility, not raw arrivals.
+
+## Evaluation
+
+Forecast accuracy is evaluated on the 2023-2025 test period using:
+
+- MAE
+- RMSE
+- MAPE
+- sMAPE
+
+Best models are selected by sMAPE, with RMSE used as a secondary ordering criterion.
+
+## Current Empirical Results
+
+Current best models by sMAPE are:
 
 | Target | Best model | MAE | RMSE | MAPE | sMAPE |
 |---|---:|---:|---:|---:|---:|
@@ -210,32 +217,35 @@ Best models by sMAPE in the current run:
 | `oceania_arrivals` | Holt-Winters | 20,392 | 22,209 | 46.16% | 61.76% |
 | `other_markets_arrivals` | SARIMA | 1,811 | 2,034 | 45.94% | 62.13% |
 
-Interpretation: SARIMA is currently selected for the primary total-arrivals target, while segment-level results vary. Large percentage errors for smaller segments reflect low denominators, imputation uncertainty, and unstable post-COVID recovery dynamics.
+The total-arrivals series is best forecast by SARIMA in the current run. Segment-level results are heterogeneous, indicating that aggregate tourism recovery does not fully represent source-market-specific behavior. Large percentage errors for smaller segments reflect low denominators, imputation uncertainty, and volatile post-pandemic recovery dynamics.
 
-## Figure and Table Style
+## Reporting Standards
 
-Figures use a consistent muted academic color palette:
+Figures and tables are designed for academic reporting. The plotting style uses:
 
-- total arrivals: charcoal
-- Asia: muted blue
-- Europe: muted green
-- Americas: muted orange
-- Oceania: muted purple
-- other markets: muted gray
+- minimal axes and no gridlines;
+- muted, consistent colors across all figures;
+- event annotations only where analytically useful;
+- publication-style figure titles;
+- reproducible saved outputs in `reports/figures/`.
 
-Generated plots avoid gridlines, decorative effects, 3D charts, and unnecessary chart elements. Event annotations are used sparingly for COVID-19, border reopening, recovery, Russia-Ukraine war, China-US tensions, and Iran-Israel conflict.
+The fixed color mapping is:
 
-## Important Implementation Notes
+| Series | Color role |
+|---|---|
+| `international_arrivals` | charcoal |
+| `asia_arrivals` | muted blue |
+| `europe_arrivals` | muted green |
+| `americas_arrivals` | muted orange |
+| `oceania_arrivals` | muted purple |
+| `other_markets_arrivals` | muted gray |
 
-- All scripts are designed to run from the repository root.
-- Project paths are centralized in `src/config.py`.
-- The cleaned dataset is reproducible from the raw VNAT CSV.
-- `reports/model_summary.md` is the current generated summary report.
-- `reports/report.md` is an older report artifact retained for reference.
-- Raw crawler HTML and screenshot caches are intentionally ignored by Git.
+## Interpretation
+
+Vietnam's international tourism demand is strongly seasonal, shock-sensitive, and structurally affected by the COVID-19 period. The border reopening phase introduces recovery volatility that reduces forecast stability. Segment-level patterns indicate heterogeneous recovery across source markets, supporting the use of both aggregate and segment-specific forecasting evidence.
 
 ## Limitations
 
-The analysis depends on crawler-derived VNAT monthly segment data. The raw file contains missing months, stale repeated pages, and segment-sum inconsistencies. The preprocessing pipeline flags and imputes affected observations, but model results should be interpreted as conditional on this cleaned dataset.
+The analysis depends on crawler-derived VNAT segment data. Missing months, stale repeated pages, and segment reconciliation issues require deterministic interpolation before modeling. Forecast results should therefore be interpreted as conditional on the cleaned dataset rather than as direct estimates from a fully observed raw series.
 
-Future work should refresh the VNAT scrape, manually verify problematic months, add exogenous predictors such as flight capacity, exchange rates, visa policy, and source-market macroeconomic indicators, and compare structural-break or regime-switching models.
+Future extensions should refresh and manually verify the VNAT scrape, incorporate exogenous variables such as flight capacity, visa policy, exchange rates, and source-market macroeconomic indicators, and compare structural-break, intervention, or regime-switching models.

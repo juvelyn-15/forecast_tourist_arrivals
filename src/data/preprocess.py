@@ -22,10 +22,11 @@ from src.data.validate_data import find_repeated_vectors, load_raw, validate, sa
 
 
 def _time_interpolate(series: pd.Series) -> pd.Series:
+    """Fill missing values with time interpolation and seasonal fallback."""
+
     out = series.astype(float).interpolate(method="time", limit_direction="both")
     month_medians = out.groupby(out.index.month).transform("median")
-    out = out.fillna(month_medians).ffill().bfill()
-    return out
+    return out.fillna(month_medians).ffill().bfill()
 
 
 def clean_segments(raw: pd.DataFrame) -> pd.DataFrame:

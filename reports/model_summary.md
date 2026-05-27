@@ -6,7 +6,7 @@ This project forecasts Vietnam's monthly international tourist arrivals using of
 
 ## Data and Validation
 
-The modeling dataset is `data/processed/vnat_monthly_segments_clean.csv`, derived from `data/raw/vnat_monthly_segments.csv`. The sample contains monthly observations from January 2012 to December 2025 for total arrivals and five regional segments. The validation layer detected 66 raw-data issues, mainly missing months, segment-sum inconsistencies, and stale repeated crawler values. These observations were flagged and imputed deterministically for modeling.
+The modeling dataset is `data/processed/vnat_monthly_segments_clean.csv`, derived from `data/raw/vnat_monthly_segments.csv`. The sample contains monthly observations from January 2012 to December 2025 for total arrivals and five regional segments. The validation layer detected 66 raw-data issues, mainly missing months, segment-sum inconsistencies, and stale repeated crawler values. These observations were flagged and imputed deterministically using time-based interpolation with calendar-month median fallback.
 
 ## Exploratory Findings
 
@@ -42,4 +42,4 @@ Observation: source-region segments recover unevenly. Statistical implication: a
 
 ## Limitations and Future Work
 
-The cleaned dataset relies on deterministic imputation where raw crawler output is missing or stale. Future work should refresh the VNAT scrape, add exogenous predictors such as flight capacity and exchange rates, and compare structural-break or regime-switching models.
+The cleaned dataset relies on deterministic interpolation where raw crawler output is missing or stale. Future work should refresh the VNAT scrape, add exogenous predictors such as flight capacity and exchange rates, and compare structural-break or regime-switching models.

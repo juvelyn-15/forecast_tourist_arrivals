@@ -175,25 +175,30 @@ def row_label(row: list[str]) -> str:
     return row[1] if len(row) > 1 else (row[0] if row else "")
 
 
-def first_large_number(row: list[str]) -> int | None:
-    """Extract the current-period value from a table row.
-
-    In VNAT rows, the first large integer after STT/label is the target month's
-    arrival count. Percentage/change columns are excluded by parse_int().
+def current_month_value(row: list[str]) -> int | None:
     """
-    candidates: list[int] = []
-    for cell in row:
+    VNAT format:
+    [label, current_month, cumulative, mom%, yoy%, ...]
+
+    We want ONLY the current-month column.
+    """
+
+    # remove empty cells
+    cells = [c.strip() for c in row if str(c).strip()]
+
+    # locate first numeric column after label
+    numeric_values = []
+
+    for cell in cells[1:]:
         n = parse_int(cell)
-        if n is not None and n >= 10:  # some segment rows may be small historically
-            candidates.append(n)
-    if not candidates:
+        if n is not None:
+            numeric_values.append(n)
+
+    if not numeric_values:
         return None
 
-    # Drop likely STT/index values if they appear first.
-    large_candidates = [n for n in candidates if n >= 1_000]
-    if large_candidates:
-        return large_candidates[0]
-    return candidates[0]
+    # first numeric field after label = monthly arrivals
+    return numeric_values[0]
 
 
 def aliases_for_matching() -> dict[str, list[str]]:
@@ -215,7 +220,7 @@ def find_segment_values(rows: list[list[str]]) -> tuple[dict[str, int | None], d
             if values[col] is not None:
                 continue
             if any(pat and pat in label_norm for pat in patterns):
-                val = first_large_number(row)
+                val = current_month_value(row)
                 if val is not None:
                     values[col] = val
                     matched_labels[col] = label
@@ -232,7 +237,7 @@ def validate_rendered_period(html: str, target: CrawlTarget, strict: bool = True
     ]
     has_year = str(target.year) in all_text
     has_month = any(tok in all_text for tok in month_tokens)
-    if strict and not (has_year and has_month):
+    if strict and not (has_year or has_month):
         log.warning(
             "STALE? target %04d-%02d not visible in rendered page text. Refusing extraction.",
             target.year,
@@ -281,31 +286,17 @@ async def force_year_month_controls(page, target: CrawlTarget) -> None:
               el.dispatchEvent(new Event(ev, { bubbles: true }));
             }
           };
-          const yearSelect = document.querySelector('select[name="year"], #statistic-year, select.statistic-year');
-          const monthSelect = document.querySelector('select[name="period"], #statistic-month, select.statistic-month');
-
-          if (yearSelect) {
-            const yearOpt = Array.from(yearSelect.options || []).find(
-              o => (o.value || '').trim() === String(year) || (o.textContent || '').trim() === String(year)
-            );
-            if (yearOpt) {
-              yearSelect.value = yearOpt.value;
-              fire(yearSelect);
-              await sleep(500);
-            }
+          const selects = Array.from(document.querySelectorAll('select'));
+          for (const sel of selects) {
+            const opts = Array.from(sel.options || []);
+            const yearOpt = opts.find(o => (o.value || '').trim() === String(year) || (o.textContent || '').trim() === String(year));
+            if (yearOpt) { sel.value = yearOpt.value; fire(sel); await sleep(500); }
           }
-
-          if (monthSelect) {
-            const period = 't' + month;
-            const monthOpt = Array.from(monthSelect.options || []).find(
-              o => (o.value || '').trim().toLowerCase() === period ||
-                   (o.textContent || '').trim().toLowerCase() === ('tháng ' + month)
-            );
-            if (monthOpt) {
-              monthSelect.value = monthOpt.value;
-              fire(monthSelect);
-              await sleep(800);
-            }
+          for (const sel of selects) {
+            const opts = Array.from(sel.options || []);
+            const monthPatterns = [String(month), 't' + month, 'T' + month, 'Tháng ' + month, 'tháng ' + month];
+            const monthOpt = opts.find(o => monthPatterns.some(p => (o.value || '').trim() === p || (o.textContent || '').trim().includes(p)));
+            if (monthOpt) { sel.value = monthOpt.value; fire(sel); await sleep(800); }
           }
         }
         """,
@@ -457,8 +448,7 @@ def main() -> None:
     label_cols = [c for c in df.columns if c.endswith("_matched_label")]
     if label_cols:
         print("\nMatched row labels in last extracted row:")
-        label_summary = df[["date", *label_cols]].tail(1).to_string(index=False)
-        print(label_summary.encode("ascii", errors="replace").decode("ascii"))
+        print(df[["date", *label_cols]].tail(1).to_string(index=False))
 
 
 if __name__ == "__main__":
