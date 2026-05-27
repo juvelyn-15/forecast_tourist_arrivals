@@ -2,19 +2,19 @@
 
 ## Abstract
 
-This repository contains a reproducible time-series forecasting study of Vietnam's monthly international tourist arrivals. The empirical analysis uses monthly segment-level data from the Vietnam National Administration of Tourism (VNAT), with total arrivals as the primary forecasting target and regional source-market arrivals as supporting analytical series. The project evaluates seasonal demand structure, post-pandemic recovery dynamics, and forecast performance across Holt-Winters, SARIMA, and SARIMA-GARCH models.
+This repository contains a reproducible academic forecasting study of Vietnam's monthly international tourist arrivals. The empirical analysis uses monthly segment-level data from the Vietnam National Administration of Tourism (VNAT), with `international_arrivals` as the sole primary forecasting target. Regional segment variables are retained as supporting evidence for market composition, source-market structure, and heterogeneous recovery interpretation.
 
-The analysis is designed as a forecasting workflow: raw data validation, deterministic preprocessing, exploratory data analysis, decomposition and stationarity testing, model estimation, out-of-sample evaluation, visualization, and interpretation.
+The central forecasting comparison evaluates Holt-Winters, SARIMA, SARIMA-GARCH, and XGBoost on the same target and the same train/test split. This design frames the repository as one coherent forecasting study rather than separate forecasting exercises for each segment.
 
 ## Research Objective
 
-The objective is to assess how classical time-series models forecast Vietnam's international tourism demand under strong seasonality, structural disruption, and post-COVID recovery uncertainty.
+The objective is to assess how classical time-series models and a machine-learning benchmark forecast Vietnam's international tourism demand under strong seasonality, structural disruption, and post-COVID recovery uncertainty.
 
-The primary dependent variable is:
+Main forecasting target:
 
 - `international_arrivals`
 
-Supporting regional variables are:
+Supporting segment variables:
 
 - `asia_arrivals`
 - `europe_arrivals`
@@ -22,30 +22,32 @@ Supporting regional variables are:
 - `oceania_arrivals`
 - `other_markets_arrivals`
 
-ASEAN arrivals are not used. Annual World Bank arrivals are not used as the primary modeling dataset.
+Segment variables are used for EDA, market composition, segment-share analysis, heterogeneous recovery interpretation, and tourism source-market structure. They are not default forecasting targets in the main model-comparison pipeline. ASEAN arrivals are not used. Annual World Bank arrivals are not used as the primary modeling dataset.
 
 ## Data
 
-The raw modeling source is:
+Raw data:
 
 ```text
 data/raw/vnat_monthly_segments.csv
 ```
 
-The processed modeling dataset is:
+Processed modeling data:
 
 ```text
 data/processed/vnat_monthly_segments_clean.csv
 ```
 
-The cleaned dataset covers January 2012 through December 2025 at monthly frequency. The model evaluation split is:
+The cleaned dataset covers January 2012 through December 2025 at monthly frequency.
+
+Model evaluation split:
 
 - Training sample: 2012-01 to 2022-12
 - Test sample: 2023-01 to 2025-12
 
 ### Data Validation Summary
 
-The raw VNAT file contains 155 rows and the cleaned dataset contains the complete 168-month panel. Validation identifies the following raw-data issues:
+The raw VNAT file contains 155 rows. The cleaned dataset contains the complete 168-month panel. Validation identifies the following raw-data issues:
 
 | Check | Result |
 |---|---:|
@@ -55,7 +57,9 @@ The raw VNAT file contains 155 rows and the cleaned dataset contains the complet
 | Duplicated months | 0 |
 | Non-positive values | 0 |
 
-The preprocessing stage preserves the raw file, flags problematic observations, imputes affected values deterministically, and writes the cleaned monthly panel. Missing or invalid target values are filled by time-based interpolation with calendar-month median fallback. Current clean-data quality flags are:
+The preprocessing stage preserves the raw file, flags problematic observations, imputes affected values deterministically, and writes the cleaned monthly panel. Missing or invalid target values are filled by time-based interpolation with calendar-month median fallback.
+
+Current clean-data quality flags:
 
 | Quality flag | Rows |
 |---|---:|
@@ -76,8 +80,9 @@ forecast_tourist_arrivals/
 │   ├── 01_eda.ipynb
 │   ├── 02_decomposition_stationarity.ipynb
 │   ├── 03_modeling_total_arrivals.ipynb
-│   ├── 04_modeling_segments.ipynb
-│   └── 05_results_interpretation.ipynb
+│   ├── 04_model_comparison.ipynb
+│   ├── 05_segment_analysis.ipynb
+│   └── 06_results_interpretation.ipynb
 ├── reports/
 │   ├── figures/
 │   ├── tables/
@@ -91,11 +96,14 @@ forecast_tourist_arrivals/
 │   ├── data/
 │   │   ├── validate_data.py
 │   │   └── preprocess.py
-│   ├── models/
-│   │   ├── evaluation.py
-│   │   ├── holt_winters.py
-│   │   ├── sarima.py
-│   │   └── sarima_garch.py
+│   ├── features/
+│   │   └── build_features.py
+│   └── models/
+│       ├── evaluation.py
+│       ├── holt_winters.py
+│       ├── sarima.py
+│       ├── sarima_garch.py
+│       └── xgboost_model.py
 ├── requirements.txt
 └── README.md
 ```
@@ -145,7 +153,7 @@ data/processed/vnat_monthly_segments_clean.csv
 reports/tables/preprocessing_flags.csv
 ```
 
-### 3. Evaluate Forecasting Models
+### 3. Evaluate Main Forecasting Models
 
 ```powershell
 python src\models\evaluation.py
@@ -157,9 +165,27 @@ Outputs:
 reports/tables/model_metrics.csv
 reports/tables/best_models.csv
 reports/tables/model_forecasts.csv
+reports/tables/all_model_comparison.csv
+reports/tables/best_model_summary.csv
 ```
 
-### 4. Optional: Refresh Raw VNAT Segment Data
+### 4. Execute Central Model-Comparison Notebook
+
+```powershell
+jupyter notebook notebooks\04_model_comparison.ipynb
+```
+
+Notebook outputs:
+
+```text
+reports/tables/all_model_comparison.csv
+reports/tables/best_model_summary.csv
+reports/figures/model_comparison_forecast.png
+reports/figures/model_comparison_metrics.png
+reports/figures/xgboost_feature_importance.png
+```
+
+### 5. Optional Raw Data Refresh
 
 ```powershell
 python src\crawl\crawl_vnat_segments.py --start 2012 --end 2025 --no-cache
@@ -169,15 +195,14 @@ Raw HTML and screenshot caches generated by the crawler are ignored by Git.
 
 ## Notebooks
 
-The notebooks provide the main analytical narrative.
-
 | Notebook | Purpose |
 |---|---|
-| `01_eda.ipynb` | Exploratory analysis of total arrivals, segment volumes, market shares, seasonality, yearly trend, growth rates, event annotations, and correlation structure. |
+| `01_eda.ipynb` | Exploratory analysis of total arrivals, segment volumes, segment shares, yearly patterns, monthly seasonality, pre-COVID/COVID/post-reopening regimes, rolling volatility, growth rates, and segment correlations. |
 | `02_decomposition_stationarity.ipynb` | Seasonal decomposition, ADF and KPSS tests, ACF/PACF analysis, log transformation comparison, and structural-break interpretation. |
-| `03_modeling_total_arrivals.ipynb` | Primary modeling notebook for total arrivals, including train/test split, forecasts, confidence intervals, residual diagnostics, and model comparison. |
-| `04_modeling_segments.ipynb` | Segment-level model evaluation for Asia, Europe, Americas, Oceania, and other markets. |
-| `05_results_interpretation.ipynb` | Final academic interpretation of data, validation results, EDA findings, model performance, implications, limitations, and future extensions. |
+| `03_modeling_total_arrivals.ipynb` | Primary time-series modeling notebook for total arrivals, including fitted values, forecasts, confidence intervals, residual diagnostics, and model interpretation. |
+| `04_model_comparison.ipynb` | Central comparison of Holt-Winters, SARIMA, SARIMA-GARCH, and XGBoost on `international_arrivals`. |
+| `05_segment_analysis.ipynb` | Supporting segment analysis for source-market composition and heterogeneous recovery interpretation. |
+| `06_results_interpretation.ipynb` | Final academic interpretation of data, validation results, EDA findings, model performance, implications, limitations, and future extensions. |
 
 ## Methods
 
@@ -191,7 +216,26 @@ SARIMA/SARIMAX models are estimated on log arrivals. A compact AIC-based grid se
 
 ### SARIMA-GARCH
 
-SARIMA-GARCH combines a SARIMA conditional mean model with a GARCH(1,1) model fitted to SARIMA residuals. GARCH is therefore applied to residual volatility, not raw arrivals.
+SARIMA-GARCH combines a SARIMA conditional mean model with a GARCH(1,1) model fitted to SARIMA residuals. GARCH is applied to residual volatility, not raw arrivals.
+
+### XGBoost
+
+XGBoost is used as a machine-learning benchmark for `international_arrivals` only. The benchmark uses lagged target values, rolling target statistics, calendar variables, and event indicators.
+
+Allowed XGBoost features:
+
+- `lag_1`, `lag_2`, `lag_3`, `lag_6`, `lag_12`
+- `rolling_mean_3`, `rolling_mean_6`, `rolling_mean_12`
+- `rolling_std_3`, `rolling_std_6`, `rolling_std_12`
+- `month`, `quarter`, `year`, `time_index`
+- `covid_period`
+- `border_reopening_period`
+- `recovery_period`
+- `russia_ukraine_war`
+- `china_us_tension`
+- `iran_israel_conflict`
+
+Same-month segment arrivals are excluded from the XGBoost feature set to avoid contemporaneous leakage.
 
 ## Evaluation
 
@@ -202,29 +246,27 @@ Forecast accuracy is evaluated on the 2023-2025 test period using:
 - MAPE
 - sMAPE
 
-Best models are selected by sMAPE, with RMSE used as a secondary ordering criterion.
+The main model comparison evaluates only `international_arrivals`. Best models are selected by sMAPE, with RMSE used as a secondary ordering criterion.
 
 ## Current Empirical Results
 
-Current best models by sMAPE are:
+Current main-target model comparison:
 
-| Target | Best model | MAE | RMSE | MAPE | sMAPE |
-|---|---:|---:|---:|---:|---:|
-| `international_arrivals` | SARIMA | 679,227 | 775,568 | 42.12% | 55.90% |
-| `asia_arrivals` | SARIMA | 560,118 | 631,949 | 44.20% | 59.30% |
-| `europe_arrivals` | Holt-Winters | 57,828 | 76,346 | 25.89% | 32.19% |
-| `americas_arrivals` | SARIMA | 337,475 | 394,276 | 397.07% | 119.38% |
-| `oceania_arrivals` | Holt-Winters | 20,392 | 22,209 | 46.16% | 61.76% |
-| `other_markets_arrivals` | SARIMA | 1,811 | 2,034 | 45.94% | 62.13% |
+| Model | MAE | RMSE | MAPE | sMAPE |
+|---|---:|---:|---:|---:|
+| Holt-Winters | 7,283,652 | 11,303,800 | 411.07% | 99.49% |
+| SARIMA | 679,227 | 775,568 | 42.12% | 55.90% |
+| SARIMA-GARCH | 679,227 | 775,568 | 42.12% | 55.90% |
+| XGBoost | 444,851 | 491,967 | 28.74% | 34.07% |
 
-The total-arrivals series is best forecast by SARIMA in the current run. Segment-level results are heterogeneous, indicating that aggregate tourism recovery does not fully represent source-market-specific behavior. Large percentage errors for smaller segments reflect low denominators, imputation uncertainty, and volatile post-pandemic recovery dynamics.
+XGBoost is the best-performing benchmark in the current run. Segment variables remain analytically important for source-market structure and recovery interpretation, but they are not treated as separate primary forecasting targets.
 
 ## Reporting Standards
 
 Figures and tables are designed for academic reporting. The plotting style uses:
 
 - minimal axes and no gridlines;
-- muted, consistent colors across all figures;
+- muted, consistent colors across figures;
 - event annotations only where analytically useful;
 - publication-style figure titles;
 - reproducible saved outputs in `reports/figures/`.
@@ -242,7 +284,7 @@ The fixed color mapping is:
 
 ## Interpretation
 
-Vietnam's international tourism demand is strongly seasonal, shock-sensitive, and structurally affected by the COVID-19 period. The border reopening phase introduces recovery volatility that reduces forecast stability. Segment-level patterns indicate heterogeneous recovery across source markets, supporting the use of both aggregate and segment-specific forecasting evidence.
+Vietnam's international tourism demand is strongly seasonal, shock-sensitive, and structurally affected by the COVID-19 period. The border reopening phase introduces recovery volatility that reduces forecast stability. Segment-level patterns indicate heterogeneous recovery across source markets, supporting the use of segment data as interpretive market-structure evidence rather than as separate primary forecasting targets.
 
 ## Limitations
 

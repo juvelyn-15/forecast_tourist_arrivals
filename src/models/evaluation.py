@@ -1,4 +1,4 @@
-"""Forecast evaluation runner for all VNAT target series.
+"""Forecast evaluation runner for the main VNAT forecasting target.
 
 Run from the repository root:
     python src/models/evaluation.py
@@ -19,8 +19,8 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-from src.config import CLEAN_SEGMENTS, TABLES, TARGET_COLUMNS, TRAIN_END
-from src.models import holt_winters, sarima, sarima_garch
+from src.config import CLEAN_SEGMENTS, MAIN_TARGET, TABLES, TRAIN_END
+from src.models import holt_winters, sarima, sarima_garch, xgboost_model
 
 
 ModelFunc = Callable[[pd.Series, int], dict]
@@ -30,6 +30,7 @@ MODELS: dict[str, ModelFunc] = {
     "Holt-Winters": holt_winters.fit_forecast,
     "SARIMA": sarima.fit_forecast,
     "SARIMA-GARCH": sarima_garch.fit_forecast,
+    "XGBoost": xgboost_model.fit_forecast,
 }
 
 
@@ -101,25 +102,16 @@ def evaluate_target(series: pd.Series, target: str) -> tuple[list[dict], dict[st
     return rows, results, forecast_df
 
 
-def run_all(df: pd.DataFrame, targets: list[str] | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    metric_rows: list[dict] = []
-    forecast_frames: list[pd.DataFrame] = []
-
-    for target in targets or TARGET_COLUMNS:
-        rows, _, forecasts = evaluate_target(df[target], target)
-        metric_rows.extend(rows)
-        if not forecasts.empty:
-            forecast_frames.append(forecasts)
-
-    metrics_df = pd.DataFrame(metric_rows)
+def run_all(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    rows, _, forecasts_df = evaluate_target(df[MAIN_TARGET], MAIN_TARGET)
+    metrics_df = pd.DataFrame(rows)
     ok = metrics_df[metrics_df["status"] == "ok"].copy()
-    best = ok.sort_values(["target", "sMAPE", "RMSE"]).groupby("target", as_index=False).first()
-    forecasts_df = pd.concat(forecast_frames, ignore_index=True) if forecast_frames else pd.DataFrame()
+    best = ok.sort_values(["sMAPE", "RMSE"]).head(1).reset_index(drop=True)
     return metrics_df, best, forecasts_df
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate Holt-Winters, SARIMA, and SARIMA-GARCH models.")
+    parser = argparse.ArgumentParser(description="Evaluate main-target forecasting models.")
     parser.add_argument("--input", default=CLEAN_SEGMENTS)
     args = parser.parse_args()
 
@@ -129,6 +121,8 @@ def main() -> None:
     metrics_df.to_csv(TABLES / "model_metrics.csv", index=False)
     best_df.to_csv(TABLES / "best_models.csv", index=False)
     forecasts_df.to_csv(TABLES / "model_forecasts.csv", index=False)
+    metrics_df.to_csv(TABLES / "all_model_comparison.csv", index=False)
+    best_df.to_csv(TABLES / "best_model_summary.csv", index=False)
     print(metrics_df.round(3).to_string(index=False))
     print(f"\nSaved metrics to {TABLES / 'model_metrics.csv'}")
 

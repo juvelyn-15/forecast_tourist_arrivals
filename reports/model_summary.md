@@ -2,44 +2,31 @@
 
 ## Research Objective
 
-This project forecasts Vietnam's monthly international tourist arrivals using official VNAT segment data. The empirical focus is forecasting accuracy, seasonal structure, volatility, and structural uncertainty after COVID-19.
+This project forecasts Vietnam's monthly international tourist arrivals using official VNAT monthly segment data. The empirical target is `international_arrivals`. Segment variables support source-market composition and heterogeneous recovery interpretation but are not primary forecasting targets.
 
 ## Data and Validation
 
-The modeling dataset is `data/processed/vnat_monthly_segments_clean.csv`, derived from `data/raw/vnat_monthly_segments.csv`. The sample contains monthly observations from January 2012 to December 2025 for total arrivals and five regional segments. The validation layer detected 66 raw-data issues, mainly missing months, segment-sum inconsistencies, and stale repeated crawler values. These observations were flagged and imputed deterministically using time-based interpolation with calendar-month median fallback.
-
-## Exploratory Findings
-
-Observed arrivals show strong monthly seasonality, a sharp pandemic collapse, and a volatile recovery after the March 2022 border reopening. Annual arrivals reach their sample minimum in 2021 and their maximum in 2025. Asia dominates the regional composition, while Europe, the Americas, Oceania, and other markets display different recovery speeds.
-
-## Stationarity
-
-ADF and KPSS tests indicate that log levels are structurally non-stationary, while first log differences are more stable. This supports the use of differenced seasonal models and motivates residual diagnostics for volatility clustering.
-
-| series               |   ADF p-value |   KPSS p-value |
-|:---------------------|--------------:|---------------:|
-| log level            |        0.3531 |            0.1 |
-| first log difference |        0      |            0.1 |
+The modeling dataset is `data/processed/vnat_monthly_segments_clean.csv`, derived from `data/raw/vnat_monthly_segments.csv`. The sample contains monthly observations from January 2012 to December 2025. The validation layer detects 66 raw-data issues, mainly missing months, segment-sum inconsistencies, and stale repeated crawler values. These observations are flagged and imputed through deterministic time interpolation with calendar-month median fallback.
 
 ## Forecast Evaluation
 
-The primary target is total international arrivals. On the 2023-2025 test period, the best total-arrivals model by sMAPE is **SARIMA**, with MAE = 679227, RMSE = 775568, MAPE = 42.12%, and sMAPE = 55.90%.
+The central comparison evaluates Holt-Winters, SARIMA, SARIMA-GARCH, and XGBoost on the same target and split. The training period is 2012-2022 and the test period is 2023-2025.
 
-| target                 | model        |       MAE |      RMSE |   MAPE |   sMAPE |
-|:-----------------------|:-------------|----------:|----------:|-------:|--------:|
-| americas_arrivals      | SARIMA       | 337475    | 394276    | 397.07 |  119.38 |
-| asia_arrivals          | SARIMA       | 560118    | 631949    |  44.2  |   59.3  |
-| europe_arrivals        | Holt-Winters |  57828    |  76346.4  |  25.89 |   32.19 |
-| international_arrivals | SARIMA       | 679227    | 775568    |  42.12 |   55.9  |
-| oceania_arrivals       | Holt-Winters |  20391.9  |  22208.8  |  46.16 |   61.76 |
-| other_markets_arrivals | SARIMA       |   1811.43 |   2033.84 |  45.94 |   62.13 |
+| Model | MAE | RMSE | MAPE | sMAPE |
+|---|---:|---:|---:|---:|
+| Holt-Winters | 7,283,652 | 11,303,800 | 411.07% | 99.49% |
+| SARIMA | 679,227 | 775,568 | 42.12% | 55.90% |
+| SARIMA-GARCH | 679,227 | 775,568 | 42.12% | 55.90% |
+| XGBoost | 444,851 | 491,967 | 28.74% | 34.07% |
 
-## Interpretation and Implications
+The current best model by sMAPE is XGBoost.
 
-Observation: Vietnam tourism demand is seasonal and shock-sensitive. Statistical implication: models must account for recurring monthly patterns and unstable post-shock residual variance. Tourism implication: capacity planning should use prediction intervals, not point forecasts alone.
+## Interpretation
 
-Observation: source-region segments recover unevenly. Statistical implication: aggregate forecasts conceal heterogeneous dynamics. Tourism implication: market-specific promotion and aviation-capacity planning should prioritize segment-level recovery evidence.
+Observation: Vietnam tourism demand is seasonal and shock-sensitive. Statistical implication: lagged arrivals, seasonal structure, and event indicators contain substantial predictive information. Tourism implication: operational forecasts should be updated as new monthly arrivals become available.
 
-## Limitations and Future Work
+Observation: source-market segments recover unevenly. Statistical implication: aggregate forecasts conceal composition changes. Tourism implication: segment data are most useful for market-structure interpretation rather than as separate primary forecasting targets.
 
-The cleaned dataset relies on deterministic interpolation where raw crawler output is missing or stale. Future work should refresh the VNAT scrape, add exogenous predictors such as flight capacity and exchange rates, and compare structural-break or regime-switching models.
+## Limitations
+
+The cleaned dataset relies on deterministic interpolation where raw crawler output is missing, stale, or internally inconsistent. Forecast results should be interpreted as conditional on the cleaned VNAT monthly panel. Future work should refresh and manually verify raw VNAT observations and incorporate external demand drivers such as air capacity, visa policy, exchange rates, and source-market macroeconomic indicators.

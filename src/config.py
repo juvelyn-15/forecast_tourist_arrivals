@@ -25,6 +25,8 @@ END_DATE = "2025-12-01"
 TRAIN_END = "2022-12-01"
 TEST_START = "2023-01-01"
 
+MAIN_TARGET = "international_arrivals"
+
 TARGET_COLUMNS = [
     "international_arrivals",
     "asia_arrivals",

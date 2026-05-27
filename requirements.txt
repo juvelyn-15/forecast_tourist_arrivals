@@ -12,6 +12,7 @@ pmdarima>=2.0.4        # auto_arima
 arch>=6.2.0            # GARCH models
 scipy>=1.11.0
 scikit-learn>=1.3.0
+xgboost>=2.0.0
 
 # Visualization
 matplotlib>=3.8.0
