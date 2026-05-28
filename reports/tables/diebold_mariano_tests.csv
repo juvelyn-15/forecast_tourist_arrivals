@@ -1,0 +1,9 @@
+model_1,model_2,loss_function,dm_statistic,p_value,interpretation
+XGBoost,SARIMA,absolute,-3.811295607149144,0.000536904958319262,XGBoost has lower absolute error loss; difference is statistically significant at 5%.
+XGBoost,SARIMA,squared,-3.531560767264979,0.0011807446199414429,XGBoost has lower squared error loss; difference is statistically significant at 5%.
+XGBoost,Holt-Winters,absolute,-2.6600291198389034,0.011709430280335553,XGBoost has lower absolute error loss; difference is statistically significant at 5%.
+XGBoost,Holt-Winters,squared,-1.8346520320744926,0.07506903011478383,No statistically significant squared loss difference at 5%.
+SARIMA,Holt-Winters,absolute,-2.617815589882537,0.012985558595545399,SARIMA has lower absolute error loss; difference is statistically significant at 5%.
+SARIMA,Holt-Winters,squared,-1.8313265972203638,0.07557500375273896,No statistically significant squared loss difference at 5%.
+SARIMA,SARIMA-GARCH,absolute,0.0,1.0,No statistically significant absolute loss difference at 5%.
+SARIMA,SARIMA-GARCH,squared,0.0,1.0,No statistically significant squared loss difference at 5%.

@@ -1,0 +1,22 @@
+model,test,lag,statistic,p_value,verdict
+Holt-Winters,Ljung-Box,6.0,15.156919719859028,0.019070723043015086,Reject no autocorrelation at 5%.
+Holt-Winters,Ljung-Box,12.0,15.627069556841384,0.20892006814869923,No residual autocorrelation detected at 5%.
+Holt-Winters,Ljung-Box,24.0,33.98936662400239,0.08485824153775308,No residual autocorrelation detected at 5%.
+Holt-Winters,ARCH-LM,6.0,35.285362064947876,3.7941589405366726e-06,Reject homoskedastic residuals at 5%.
+Holt-Winters,ARCH-LM,12.0,34.13818872106697,0.0006415085873410221,Reject homoskedastic residuals at 5%.
+Holt-Winters,Jarque-Bera,,1123.457753447751,1.1072572003045794e-244,Reject normal residuals at 5%.
+Holt-Winters,Durbin-Watson,,1.749643595014749,,Near 2 suggests limited first-order autocorrelation.
+SARIMA,Ljung-Box,6.0,0.1512344836388746,0.9999319030140088,No residual autocorrelation detected at 5%.
+SARIMA,Ljung-Box,12.0,0.24445752280632782,0.999999995828829,No residual autocorrelation detected at 5%.
+SARIMA,Ljung-Box,24.0,0.32022948217131314,1.0,No residual autocorrelation detected at 5%.
+SARIMA,ARCH-LM,6.0,6.557199651301216,0.3637423447541591,No ARCH effects detected at 5%.
+SARIMA,ARCH-LM,12.0,6.781518659545318,0.8717074853424784,No ARCH effects detected at 5%.
+SARIMA,Jarque-Bera,,83930.65541089211,0.0,Reject normal residuals at 5%.
+SARIMA,Durbin-Watson,,1.0005750965324767,,Evidence of positive first-order autocorrelation.
+SARIMA-GARCH,Ljung-Box,6.0,0.1512344836388746,0.9999319030140088,No residual autocorrelation detected at 5%.
+SARIMA-GARCH,Ljung-Box,12.0,0.24445752280632782,0.999999995828829,No residual autocorrelation detected at 5%.
+SARIMA-GARCH,Ljung-Box,24.0,0.32022948217131314,1.0,No residual autocorrelation detected at 5%.
+SARIMA-GARCH,ARCH-LM,6.0,6.557199651301216,0.3637423447541591,No ARCH effects detected at 5%.
+SARIMA-GARCH,ARCH-LM,12.0,6.781518659545318,0.8717074853424784,No ARCH effects detected at 5%.
+SARIMA-GARCH,Jarque-Bera,,83930.65541089211,0.0,Reject normal residuals at 5%.
+SARIMA-GARCH,Durbin-Watson,,1.0005750965324767,,Evidence of positive first-order autocorrelation.

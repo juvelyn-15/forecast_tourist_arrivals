@@ -185,7 +185,33 @@ reports/figures/model_comparison_metrics.png
 reports/figures/xgboost_feature_importance.png
 ```
 
-### 5. Optional Raw Data Refresh
+### 5. Additional Empirical Diagnostics
+
+```powershell
+python src\analysis\empirical_diagnostics.py
+```
+
+Outputs:
+
+```text
+reports/tables/structural_break_tests.csv
+reports/tables/seasonal_significance_tests.csv
+reports/tables/seasonal_stability_tests.csv
+reports/tables/seasonal_strength_metrics.csv
+reports/tables/sarima_estimation_results.csv
+reports/tables/garch_estimation_results.csv
+reports/tables/residual_diagnostics.csv
+reports/tables/diebold_mariano_tests.csv
+reports/tables/latex/
+reports/figures/seasonal_stability_boxplot.png
+reports/figures/structural_break_zivot_andrews.png
+reports/figures/seasonal_strength_comparison.png
+reports/figures/residual_diagnostics_updated.png
+```
+
+The Zivot-Andrews test provides formal evidence on stationarity under a possible structural break in log arrivals. The Friedman seasonal-significance test evaluates whether monthly seasonal effects are statistically meaningful in the pre-COVID period. The Kruskal-Wallis monthly stability tests compare pre-COVID and post-reopening seasonal distributions. STL strength metrics quantify the relative importance of seasonal and trend components. SARIMA and GARCH parameter tables support model interpretation and volatility persistence claims. Residual diagnostics assess autocorrelation, ARCH effects, normality, and first-order serial correlation. Diebold-Mariano tests evaluate whether forecast accuracy differences are statistically significant under absolute and squared error loss.
+
+### 6. Optional Raw Data Refresh
 
 ```powershell
 python src\crawl\crawl_vnat_segments.py --start 2012 --end 2025 --no-cache

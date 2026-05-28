@@ -1,0 +1,2 @@
+test,statistic,p_value,sample_period,n_years,interpretation
+Friedman test across calendar months,51.71153846153851,3.074825046739947e-07,2012-01 to 2019-12,8,Seasonal month effects are statistically significant at 5%.

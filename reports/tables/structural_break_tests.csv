@@ -1,0 +1,2 @@
+target,transformation,test,regression,test_statistic,p_value,critical_value_1pct,critical_value_5pct,critical_value_10pct,used_lag,break_index,break_date,interpretation
+international_arrivals,log,Zivot-Andrews,constant and trend,-4.855528460059636,0.09302165939534678,-5.57556,-5.07332,-4.82668,1,97,2020-02-01,Do not reject unit root with one structural break at 5%.
