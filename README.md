@@ -287,33 +287,11 @@ Current main-target model comparison:
 
 XGBoost is the best-performing benchmark in the current run. Segment variables remain analytically important for source-market structure and recovery interpretation, but they are not treated as separate primary forecasting targets.
 
-## Reporting Standards
-
-Figures and tables are designed for academic reporting. The plotting style uses:
-
-- minimal axes and no gridlines;
-- muted, consistent colors across figures;
-- event annotations only where analytically useful;
-- publication-style figure titles;
-- reproducible saved outputs in `reports/figures/`.
-
-The fixed color mapping is:
-
-| Series | Color role |
-|---|---|
-| `international_arrivals` | charcoal |
-| `asia_arrivals` | muted blue |
-| `europe_arrivals` | muted green |
-| `americas_arrivals` | muted orange |
-| `oceania_arrivals` | muted purple |
-| `other_markets_arrivals` | muted gray |
 
 ## Interpretation
 
 Vietnam's international tourism demand is strongly seasonal, shock-sensitive, and structurally affected by the COVID-19 period. The border reopening phase introduces recovery volatility that reduces forecast stability. Segment-level patterns indicate heterogeneous recovery across source markets, supporting the use of segment data as interpretive market-structure evidence rather than as separate primary forecasting targets.
 
 ## Limitations
-
-The analysis depends on crawler-derived VNAT segment data. Missing months, stale repeated pages, and segment reconciliation issues require deterministic interpolation before modeling. Forecast results should therefore be interpreted as conditional on the cleaned dataset rather than as direct estimates from a fully observed raw series.
 
 Future extensions should refresh and manually verify the VNAT scrape, incorporate exogenous variables such as flight capacity, visa policy, exchange rates, and source-market macroeconomic indicators, and compare structural-break, intervention, or regime-switching models.
